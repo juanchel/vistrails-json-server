@@ -33,7 +33,8 @@ def get_signature(mod_type, port_type):
 	return {
 		'Integer' : {
 			'out' : '(org.vistrails.vistrails.basic:Integer)',
-			'val' : '(org.vistrails.vistrails.basic:Integer)'
+			'out0': '(org.vistrails.vistrails.basic:Integer)',
+			'in' : '(org.vistrails.vistrails.basic:Integer)'
 		},
 		'String' : {
 			'out' : '(org.vistrails.vistrails.basic:String)',
@@ -78,7 +79,8 @@ def get_port_name(mod_type, port_type):
 	return {
 		'Integer' : {
 			'out' : 'value',
-			'val' : 'value'
+			'out0': 'value_as_string',
+			'in' : 'value'
 		},
 		'String' : {
 			'out' : 'value',
@@ -111,7 +113,8 @@ def get_port_type(mod_type, port_type):
 	return {
 		'Integer' : {
 			'out' : 'source',
-			'val' : 'destination'
+			'out0': 'source',
+			'in' : 'destination'
 		},
 		'String' : {
 			'out' : 'source',
@@ -146,7 +149,9 @@ with open('nodes.json', 'r') as webfile:
 
 modules = []
 links = []
+integerNodes = []
 count = {'action' : 1, 'add' : 0, 'module' : 0, 'location' : 0, 'connection' : 0, 'port' : 0, 'function' : 0, 'parameter' : 0}
+ignoreValueIntegerNode = ''
 
 # Read in all the nodes from json
 for node in data['nodes']:
@@ -156,10 +161,14 @@ for node in data['nodes']:
 	y = node['y']
 	if type == 'String':
 		value = node['fields']['in'][0]['val']
+	elif type == 'Integer':
+		value = node['fields']['in'][0]['val']
+		# save nid of integer nodes to later check if it occurs in between workflow flow or as a starting point
+		# This is done because integer can act as a convertor from int to string also for SUM
+		integerNodes.append(id)
 	else:
 		value = ''
 	modules.append(Module(id, type, x, y, value))
-
 # Read in all the connections from json
 for conn in data['connections']:
 	par1 = conn['from_node']
@@ -167,6 +176,9 @@ for conn in data['connections']:
 	par2 = conn['to_node']
 	prt2 = conn['to']
 	links.append(Link(par1, par2, prt1, prt2))
+	# check if any integer node is part of "to _node", then we will know if occurs in between workflow
+	if par2 in integerNodes:
+		ignoreValueIntegerNode = par2
 
 # Define the initial vistrail xml tree
 vt = ElementTree.Element('vistrail')
@@ -230,10 +242,16 @@ for mod in modules:
 
 	if mod.type == 'FileSink':
 		# Location is hard coded for now
-		mod.value = '/Users/chen/Desktop/result.txt'
+		mod.value = '/Users/gautammadaan/Desktop/result.txt'
 		add_value = True
 		add_type = 'org.vistrails.vistrails.basic:OutputPath'
 		add_name = 'outputPath'
+
+		# ignore integer nodes which occur inbetween workflow
+	if mod.type == 'Integer' and  mod.id != ignoreValueIntegerNode:
+		add_value = True
+		add_type = 'org.vistrails.vistrails.basic:Integer'
+		add_name = 'value'
 
 	if add_value == True:
 		in_act = ElementTree.SubElement(vt, 'action')
