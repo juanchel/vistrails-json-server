@@ -43,7 +43,7 @@ def get_signature(mod_type, port_type):
 		'List' : {
 			'in0' : '(org.vistrails.vistrails.basic:Module)',
 			'in1' : '(org.vistrails.vistrails.basic:Module)',
-			'out' : '(org.vistrails.vistrails.basic:List)'
+			'out0' : '(org.vistrails.vistrails.basic:List)'
 		},
 		'ConcatenateString' : {
 			'val1' : '(org.vistrails.vistrails.basic:String)',
@@ -55,7 +55,7 @@ def get_signature(mod_type, port_type):
 			'out' : '(org.vistrails.vistrails.basic:File)'
 		},
 		'FileSink' : {
-			'in' : '(org.vistrails.vistrails.basic:File)',
+			'in0' : '(org.vistrails.vistrails.basic:File)',
 		},
 		'Sum' : {
 			'val' : '(org.vistrails.vistrails.basic:List)',
@@ -89,7 +89,7 @@ def get_port_name(mod_type, port_type):
 		'List' : {
 			'in0' : 'head',
 			'in1' : 'head',
-			'out' : 'value'
+			'out0' : 'value'
 		},
 		'ConcatenateString' : {
 			'val1' : 'str1',
@@ -101,7 +101,7 @@ def get_port_name(mod_type, port_type):
 			'out' : 'out_value'
 		},
 		'FileSink' : {
-			'in' : 'file'
+			'in0' : 'file'
 		},
 		'Sum' : {
 			'val' : 'InputList',
@@ -123,7 +123,7 @@ def get_port_type(mod_type, port_type):
 		'List' : {
 			'in0' : 'destination',
 			'in1' : 'destination',
-			'out' : 'source'
+			'out0' : 'source'
 		},
 		'ConcatenateString' : {
 			'val1' : 'destination',
@@ -135,7 +135,7 @@ def get_port_type(mod_type, port_type):
 			'in' : 'destination'
 		},
 		'FileSink' : {
-			'in' : 'destination'
+			'in0' : 'destination'
 		},
 		'Sum' : {
 			'val' : 'destination',
